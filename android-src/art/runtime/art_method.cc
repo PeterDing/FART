@@ -168,10 +168,12 @@ extern "C" void dumpDexFileByExecute(ArtMethod *artmethod)
         if (dexfilefp > 0) {
             close(dexfilefp);
             dexfilefp = 0;
-
         } else {
             dexfilefp = open(dexfilepath, O_CREAT | O_RDWR, 0666);
             if (dexfilefp > 0) {
+                // 注意一些壳会把 dexfilepf[:8] 的 magic code
+                // 抹去，让内存搜索 magic code 的方法失效。
+                // 所以在 dump 下 dex 后要把 magic code 填回去。
                 write(dexfilefp, (void *)begin_, size_);
                 fsync(dexfilefp);
                 close(dexfilefp);
@@ -234,6 +236,9 @@ extern "C" void dumpArtMethod(ArtMethod *artmethod) SHARED_LOCKS_REQUIRED(Locks:
         } else {
             dexfilefp = open(dexfilepath, O_CREAT | O_RDWR, 0666);
             if (dexfilefp > 0) {
+                // 注意一些壳会把 dexfilepf[:8] 的 magic code
+                // 抹去，让内存搜索 magic code 的方法失效。
+                // 所以在 dump 下 dex 后要把 magic code 填回去。
                 write(dexfilefp, (void *)begin_, size_);
                 fsync(dexfilefp);
                 close(dexfilefp);
